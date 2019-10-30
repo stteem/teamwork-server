@@ -1,0 +1,28 @@
+{
+  "name": "teamwork-backend",
+  "version": "1.0.0",
+  "description": "Teamwork is an internal social network for employees of an organization. The goal of this application is to facilitate more interaction between colleagues and promote team bonding.",
+  "main": "server.js",
+  "scripts": {
+    "test": "jasmine"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stteem/teamwork-server.git"
+  },
+  "author": "Uwem Uke",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stteem/teamwork-server/issues"
+  },
+  "homepage": "https://github.com/stteem/teamwork-server#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.18.2",
+    "jasmine": "^3.5.0"
+  }
+}
