@@ -17,9 +17,13 @@
   },
   "homepage": "https://github.com/stteem/teamwork-server#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^7.12.1",
+    "request": "^2.88.0"
   },
   "devDependencies": {
+    "@types/pg": "^7.11.2",
     "eslint": "^6.6.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",

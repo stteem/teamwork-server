@@ -1,13 +1,10 @@
-// MongoDb Username: stteem
-// MongoDb Password: EJkSazAOeX1ld18X
-// Connection String: mongodb+srv://stteem:<password>@cluster0-bb2aw.mongodb.net/test?retryWrites=true&w=majority
-
 const express = require('express');
 const bodyParser = require('body-parser');
+
 // const Thing = require('./models/thing');
-const path = require('path');
+//const path = require('path');
 const userRoutes = require('./routes/user');
-const stuffRoutes = require('./routes/stuff');
+//const stuffRoutes = require('./routes/stuff');
 
 const app = express();
 
@@ -23,13 +20,17 @@ app.use((req, res, next) => {
 // parse request body into a json object
 app.use(bodyParser.json());
 
+
+app.use('/', userRoutes);
+
+
 // allow access to the images folder/static resource
 // Using the built-in  path  package and Express'  static  method,
 // we can serve up static resources such as images
-app.use('/images', express.static(path.join(__dirname, 'images')));
+//app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use('/api/stuff', stuffRoutes);
-app.use('/api/auth', userRoutes);
+//app.use('/api/stuff', stuffRoutes);
+//app.use('/api/auth', userRoutes);
 
 /* app.post('/api/stuff', (req, res, next) => {
   console.log(req.body);
