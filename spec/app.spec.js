@@ -14,14 +14,14 @@ describe('API Request', () => {
 		beforeAll((done) => {
 			request.get('http://localhost:3000/api/v1/users', (error, response, body) => {
 				data.status = response.statusCode;
-				data.body = body;
-				console.log('data.body',data.body)
+				data.body = JSON.parse(body);
+				//console.log(data.body)
 				done();
 			});
 		});
 		it('Should return Status 200', () => {
 			expect(data.status).toBe(200);
-		});
+		});	
 	});
 
 	describe('POST /', () => {
@@ -50,6 +50,24 @@ describe('API Request', () => {
 		});
 		it('Should return Status 201', () => {
 			expect(data.status).toBe(201);
+		});
+	});
+
+	describe('Login a user POST /auth/login', () => {
+		var formData = {
+			email : 'String' ,
+			password : 'String' ,
+		}
+		beforeAll((done) => {
+			request.post({url:'http://localhost:3000/api/v1/auth/login', formData: formData}, function optionalCallback(err, httpResponse, body) {
+			  if (err) {
+			    return console.error('upload failed:', err);
+			  }
+			  data.status = httpResponse.statusCode;
+			  data.body = body;
+			  console.log('Upload successful!  Server responded with:', body);
+			  done();
+			});
 		});
 	});
 });
