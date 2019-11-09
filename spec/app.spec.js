@@ -12,7 +12,7 @@ describe('API Request', () => {
 	describe('GET /', () => {
 		const data = {};
 		beforeAll((done) => {
-			request.get('http://localhost:3000/users', (error, response, body) => {
+			request.get('http://localhost:3000/api/v1/users', (error, response, body) => {
 				data.status = response.statusCode;
 				data.body = JSON.parse(body);
 				//console.log(data.body)
@@ -38,7 +38,7 @@ describe('API Request', () => {
 		}
 		let data = {};
 		beforeAll((done) => {
-			request.post({url:'http://localhost:3000/auth/create-user', formData: formData}, function optionalCallback(err, httpResponse, body) {
+			request.post({url:'http://localhost:3000/api/v1/auth/create-user', formData: formData}, function optionalCallback(err, httpResponse, body) {
 			  if (err) {
 			    return console.error('upload failed:', err);
 			  }
@@ -53,13 +53,13 @@ describe('API Request', () => {
 		});
 	});*/
 
-	/*describe('Login a user POST /auth/signin', () => {
+	describe('Login a user POST /auth/login', () => {
 		var formData = {
-			“email” : 'String' ,
-			“password” : 'String' ,
+			email : 'String' ,
+			password : 'String' ,
 		}
 		beforeAll((done) => {
-			request.post({url:'http://localhost:3000/auth/signin', formData: formData}, function optionalCallback(err, httpResponse, body) {
+			request.post({url:'http://localhost:3000/api/v1/auth/login', formData: formData}, function optionalCallback(err, httpResponse, body) {
 			  if (err) {
 			    return console.error('upload failed:', err);
 			  }
@@ -69,5 +69,5 @@ describe('API Request', () => {
 			  done();
 			});
 		});
-	});*/
+	});
 });
