@@ -1,6 +1,17 @@
 language: node_js
 node_js: 
   - "stable"
+env:
+  - NODE_ENV="development"
+  - NODE_ENV="production";SESSION_SECRET="null"
+services:
+  - postgresql
+install:
+  - npm ci
 cache:
   directories:
-    - "node_modules"
+  - "$HOME/.npm"
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
+script:
+  - npm test
