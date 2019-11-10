@@ -15,13 +15,14 @@ describe('API Request', () => {
 			request.get('http://localhost:3000/api/v1/users', (error, response, body) => {
 				data.status = response.statusCode;
 				data.body = JSON.parse(body);
-				//console.log(data.body)
+				data.error = error;
+				console.log('statusCode 0',data.status)
 				done();
 			});
 		});
 		it('Should return Status 200', () => {
 			expect(data.status).toBe(200);
-		});	
+		});		
 	});
 
 	/*describe('POST /', () => {
@@ -51,7 +52,7 @@ describe('API Request', () => {
 		it('Should return Status 201', () => {
 			expect(data.status).toBe(201);
 		});
-	});*/
+	});
 
 	describe('Login a user POST /auth/login', () => {
 		var formData = {
@@ -69,5 +70,5 @@ describe('API Request', () => {
 			  done();
 			});
 		});
-	});
+	});*/
 });
