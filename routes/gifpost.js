@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-//const auth = require('../middleware/auth');
+const auth = require('../middleware/auth');
 const multer = require('../middleware/multer-config');
 //const multer = require('multer');
 
@@ -15,7 +15,7 @@ const gifCtrl = require('../controllers/gifpost');
 //router.post('/auth/create-user', userCtrl.createUser);
 //router.post('/auth/login', userCtrl.login);
 
-router.post('/gifs', multer, gifCtrl.createGif);
+router.post('/gifs', auth, multer, gifCtrl.createGif);
 
 
 module.exports = router;

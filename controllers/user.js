@@ -2,6 +2,7 @@ const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+
 const pool = new Pool();
 
 /* const pool = new Pool({
@@ -35,10 +36,10 @@ exports.createUser = (request, response, next) => {
     firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus,
   } = request.body;
   // const hashPassword = bcrypt.hash(password, 10);
-  // const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
-  
-  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
-  const values = [firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus];
+  const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+  const time = new Date();
+  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *';
+  const values = [firstname, lastname, email, hashpw, gender, jobrole, department, address, maritalstatus, time];
 
   // Check if email already exists
   pool.query('SELECT email FROM users WHERE email = $1', [email], (error, res) => {
