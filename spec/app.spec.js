@@ -24,7 +24,7 @@ describe('API Request', () => {
 		});	
 	});
 
-	describe('POST /', () => {
+	/*describe('POST /', () => {
 		var formData = {
 			firstname: "Ubon",
 			lastname: "Udofia",
@@ -51,7 +51,7 @@ describe('API Request', () => {
 		it('Should return Status 201', () => {
 			expect(data.status).toBe(201);
 		});
-	});
+	});*/
 
 	describe('Login a user POST /auth/login', () => {
 		var formData = {

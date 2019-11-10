@@ -36,6 +36,7 @@ exports.createUser = (request, response, next) => {
   } = request.body;
   // const hashPassword = bcrypt.hash(password, 10);
   // const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+
   const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
   const values = [firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus];
 
