@@ -10,12 +10,8 @@ const gifCtrl = require('../controllers/gifpost');
 //upload.single('image')
 
 
-
-//router.get('/users', userCtrl.getUsers);
-//router.post('/auth/create-user', userCtrl.createUser);
-//router.post('/auth/login', userCtrl.login);
-
 router.post('/gifs', auth, multer, gifCtrl.createGif);
+router.delete('/gifs/:gifId', auth, gifCtrl.deleteGif);
 
 
 module.exports = router;

@@ -56,6 +56,8 @@ exports.createUser = (request, response, next) => {
     }
     // Create new user if email doesn't exist
 
+    //const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
+
     pool.query(text, values, (error, res, body) => {
       if (error) {
         res.status(500).send('server not found');
@@ -65,7 +67,7 @@ exports.createUser = (request, response, next) => {
         status: 'success',
         data: {
           message: 'User account successfully created',
-          token: 'String',
+          token: 'token',
           userId: res.rows[0].userid,
         },
       });
@@ -83,7 +85,7 @@ exports.login = (req, res, next) => {
       console.log(`not able to get connection ${error}`);
       response.status(400).json({
         status: 'error',
-        error,
+        error: error
       });
     }
     if (!response.rows[0]) {
@@ -101,14 +103,14 @@ exports.login = (req, res, next) => {
 
         return res.status(200).json({
           userId: response.rows[0].userid,
-          token,
+          token: token,
         });
       },
     )
       .catch(
         (error) => {
           res.status(500).send({
-            error,
+            error: error,
           });
         },
       );
