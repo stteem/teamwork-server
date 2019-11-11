@@ -35,10 +35,10 @@ exports.createUser = (request, response, next) => {
     firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus,
   } = request.body;
   // const hashPassword = bcrypt.hash(password, 10);
-  // const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
-  
-  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *';
-  const values = [firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus];
+  const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
+  const time = new Date();
+  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *';
+  const values = [firstname, lastname, email, hashpw, gender, jobrole, department, address, maritalstatus, time];
 
   // Check if email already exists
   pool.query('SELECT email FROM users WHERE email = $1', [email], (error, res) => {
@@ -55,6 +55,8 @@ exports.createUser = (request, response, next) => {
     }
     // Create new user if email doesn't exist
 
+    //const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
+
     pool.query(text, values, (error, res, body) => {
       if (error) {
         res.status(500).send('server not found');
@@ -64,7 +66,7 @@ exports.createUser = (request, response, next) => {
         status: 'success',
         data: {
           message: 'User account successfully created',
-          token: 'String',
+          token: 'token',
           userId: res.rows[0].userid,
         },
       });
@@ -82,7 +84,7 @@ exports.login = (req, res, next) => {
       console.log(`not able to get connection ${error}`);
       response.status(400).json({
         status: 'error',
-        error,
+        error: error
       });
     }
     if (!response.rows[0]) {
@@ -100,14 +102,14 @@ exports.login = (req, res, next) => {
 
         return res.status(200).json({
           userId: response.rows[0].userid,
-          token,
+          token: token,
         });
       },
     )
       .catch(
         (error) => {
           res.status(500).send({
-            error,
+            error: error,
           });
         },
       );

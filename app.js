@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 //const path = require('path');
 const userRoutes = require('./routes/user');
 const gifRoutes = require('./routes/gifpost');
+const articleRoutes = require('./routes/article');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(bodyParser.json());
 
 app.use('/api/v1/', userRoutes);
 app.use('/api/v1/', gifRoutes);
+app.use('/api/v1/', articleRoutes);
 
 
 // allow access to the images folder/static resource
