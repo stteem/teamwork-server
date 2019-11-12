@@ -94,3 +94,44 @@ exports.deleteGif = (request, response) => {
       });
   })
 }
+
+const getTitle = (gifid) => {
+  pool.query('SELECT title FROM images WHERE imageid = $1', [gifid], (error, result) => {
+    if (error) {
+      console.log(`not able to get connection ${error}`);
+      response.status(400).json({
+        status: 'error',
+        error,
+      });
+    }
+    
+    return result.rows[0];
+  })
+}
+
+exports.gifComment = (request, response) => {
+  const gifid = parseInt(request.params.gifId);
+  const { comment } = request.body;
+  console.log('gifid', request.params.gifid)
+  console.log('comment', comment)
+  let datetime = new Date();
+  const text = 'INSERT INTO gifcomments (gifid, comment, createdon) VALUES ($1, $2, $3) RETURNING *';
+  const values = [gifid, comment, datetime];
+
+  // Insert comment
+  pool.query(text, values, (error, res) => {
+    if (error) {
+      response.status(500).send('server not found');
+      //throw error;
+    }
+    return response.status(201).json({
+      status: 'success',
+      data: {
+        'message' : 'Comment successfully created' ,
+        'createdOn' : res.rows[0].createdon ,
+        'gifTitle' : getTitle(gifid) ,
+        'comment' : res.rows[0].comment ,
+      },
+    });
+  });
+};

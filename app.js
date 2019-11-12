@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 
 // const Thing = require('./models/thing');
 //const path = require('path');
+const feedRoutes = require('./routes/feed');
 const userRoutes = require('./routes/user');
 const gifRoutes = require('./routes/gifpost');
 const articleRoutes = require('./routes/article');
@@ -21,7 +22,7 @@ app.use((req, res, next) => {
 // parse request body into a json object
 app.use(bodyParser.json());
 
-
+app.use('/api/v1/', feedRoutes);
 app.use('/api/v1/', userRoutes);
 app.use('/api/v1/', gifRoutes);
 app.use('/api/v1/', articleRoutes);

@@ -13,6 +13,8 @@ const gifCtrl = require('../controllers/gifpost');
 
 router.post('/gifs', auth, multer, gifCtrl.createGif);
 router.delete('/gifs/:gifId', auth, gifCtrl.deleteGif);
+router.post('/gifs/:gifid/comment', auth, gifCtrl.gifComment);
+
 
 
 module.exports = router;
