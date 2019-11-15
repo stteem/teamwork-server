@@ -14,7 +14,12 @@ cloudinary.config({
 
 // console.log('cloud', cloudinary.config())
 
-const pool = new Pool();
+//const pool = new Pool();
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: true,
+});
 
 exports.createGif = async (req, res) => {
   // const { filename} = req.file;
