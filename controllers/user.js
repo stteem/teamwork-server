@@ -5,33 +5,8 @@ const jwt = require('jsonwebtoken');
 
 const pool = new Pool();
 
-/* const pool = new Pool({
-  user: 'uke',
-  host: 'localhost',
-  database: 'teamwork',
-  password: 'tracker',
-  port: 5432,
-}) */
 
-exports.getUsers = (request, response, next) => {
-  pool.query('SELECT * FROM users', (error, res) => {
-    if (error) {
-      // throw error
-      console.log(`not able to get connection ${error}`);
-      response.status(400).json({
-      	status: 'error',
-      	error: error.stack,
-      });
-    }
-    response.status(200).json({
-    	status: 'success',
-    	data: res.rows,
-    });
-  });
-};
-
-
-exports.createUser = (request, response, next) => {
+exports.createUser = (request, response) => {
   const {
     firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus,
   } = request.body;
@@ -39,35 +14,37 @@ exports.createUser = (request, response, next) => {
   const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
   const time = new Date();
   const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *';
-  const values = [firstname, lastname, email, hashpw, gender, jobrole, department, address, maritalstatus, time];
+  const values = [firstname, lastname, email, hashpw, gender,
+    jobrole, department, address, maritalstatus, time];
+    
 
   // Check if email already exists
-  pool.query('SELECT email FROM users WHERE email = $1', [email], (error, res) => {
-    if (error) {
-      console.log(`not able to get connection ${error}`);
+  pool.query('SELECT email FROM users WHERE email = $1', [email], (err, result) => {
+    if (err) {
       response.status(400).json({
         status: 'error',
-        error,
+        err,
       });
     }
-    if (res.rows[0]) {
-      console.log(res.rows[0]);
+    if (result.rows[0]) {
       return response.status(401).send('email already exists!');
     }
+
     // Create new user if email doesn't exist
 
-    //const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
-
-    pool.query(text, values, (error, res, body) => {
+    return pool.query(text, values, (error, res) => {
       if (error) {
         res.status(500).send('server not found');
         throw error;
       }
-      return response.status(201).json({
+
+      const token = jwt.sign({ userId: res.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
+
+      response.status(201).json({
         status: 'success',
         data: {
           message: 'User account successfully created',
-          token: 'token',
+          token,
           userId: res.rows[0].userid,
         },
       });
@@ -76,41 +53,40 @@ exports.createUser = (request, response, next) => {
 };
 
 
-exports.login = (req, res, next) => {
+exports.login = (req, res) => {
   // const { email, password } = request.body;
   const text = 'SELECT userid, email, password FROM users WHERE email = $1';
 
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
-      console.log(`not able to get connection ${error}`);
       response.status(400).json({
         status: 'error',
-        error: error
+        error,
       });
     }
     if (!response.rows[0]) {
       return res.status(401).send('User not found!');
     }
-    bcrypt.compare(req.body.password, response.rows[0].password).then(
+    return bcrypt.compare(req.body.password, response.rows[0].password).then(
       (valid) => {
         if (!valid) {
-          return res.status(401).json({
+          res.status(401).json({
             error: new Error('Incorrect password!'),
           });
         }
 
         const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
 
-        return res.status(200).json({
+        res.status(200).json({
           userId: response.rows[0].userid,
-          token: token,
+          token,
         });
       },
     )
       .catch(
-        (error) => {
+        (err) => {
           res.status(500).send({
-            error: error,
+            err,
           });
         },
       );
