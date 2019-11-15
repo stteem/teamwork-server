@@ -6,7 +6,7 @@ const pool = new Pool({
   ssl: true,
 });
 
-const pool = new Pool();
+//const pool = new Pool();
 
 // console.log('userid', userid.getUserId(request));
 
