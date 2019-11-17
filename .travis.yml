@@ -2,8 +2,7 @@ language: node_js
 node_js: 
   - "stable"
 env:
-  - NODE_ENV="development"
-  - NODE_ENV="production";SESSION_SECRET="7ot"
+  - NODE_ENV="test"
 services:
   - postgresql
 install:
@@ -13,6 +12,6 @@ cache:
   - "$HOME/.npm"
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
-  - psql -U postgres -f ./testdb/teamwork.sql -d travis_ci_test
+  - psql -f ./testdb/teamwork.sql -d travis_ci_test -U postgres
 script:
   - npm test
