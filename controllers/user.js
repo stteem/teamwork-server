@@ -11,6 +11,24 @@ const pool = new Pool({
 });
 
 
+exports.getUsers = (request, response, next) => {
+  pool.query('SELECT * FROM users', (error, res) => {
+    if (error) {
+      // throw error
+      console.log(`not able to get connection ${error}`);
+      response.status(400).json({
+        status: 'error',
+        error: error.stack,
+      });
+    }
+    response.status(200).json({
+      status: 'success',
+      data: res.rows,
+    });
+  });
+};
+
+
 exports.createUser = (request, response) => {
   const {
     firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus,
