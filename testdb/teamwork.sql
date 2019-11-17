@@ -35,9 +35,6 @@ CREATE TABLE public.articles (
     userid integer
 );
 
-
-ALTER TABLE public.articles OWNER TO uke;
-
 --
 -- TOC entry 204 (class 1259 OID 40983)
 -- Name: articles_articleid_seq; Type: SEQUENCE; Schema: public; Owner: uke
@@ -50,9 +47,6 @@ CREATE SEQUENCE public.articles_articleid_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE public.articles_articleid_seq OWNER TO uke;
 
 --
 -- TOC entry 2873 (class 0 OID 0)
@@ -76,9 +70,6 @@ CREATE TABLE public.comments (
     authorid integer
 );
 
-
-ALTER TABLE public.comments OWNER TO uke;
-
 --
 -- TOC entry 208 (class 1259 OID 41012)
 -- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: uke
@@ -91,9 +82,6 @@ CREATE SEQUENCE public.comments_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE public.comments_id_seq OWNER TO uke;
 
 --
 -- TOC entry 2874 (class 0 OID 0)
@@ -117,9 +105,6 @@ CREATE TABLE public.gifcomments (
     authorid integer
 );
 
-
-ALTER TABLE public.gifcomments OWNER TO uke;
-
 --
 -- TOC entry 210 (class 1259 OID 41023)
 -- Name: gifcomments_id_seq; Type: SEQUENCE; Schema: public; Owner: uke
@@ -132,9 +117,6 @@ CREATE SEQUENCE public.gifcomments_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE public.gifcomments_id_seq OWNER TO uke;
 
 --
 -- TOC entry 2875 (class 0 OID 0)
@@ -158,9 +140,6 @@ CREATE TABLE public.images (
     createdon timestamp(4) without time zone
 );
 
-
-ALTER TABLE public.images OWNER TO uke;
-
 --
 -- TOC entry 206 (class 1259 OID 40996)
 -- Name: images_imageid_seq; Type: SEQUENCE; Schema: public; Owner: uke
@@ -173,9 +152,6 @@ CREATE SEQUENCE public.images_imageid_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE public.images_imageid_seq OWNER TO uke;
 
 --
 -- TOC entry 2876 (class 0 OID 0)
@@ -206,8 +182,6 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO uke;
-
 --
 -- TOC entry 202 (class 1259 OID 16395)
 -- Name: users_userid_seq; Type: SEQUENCE; Schema: public; Owner: uke
@@ -220,9 +194,6 @@ CREATE SEQUENCE public.users_userid_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER TABLE public.users_userid_seq OWNER TO uke;
 
 --
 -- TOC entry 2877 (class 0 OID 0)

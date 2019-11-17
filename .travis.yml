@@ -2,7 +2,7 @@ language: node_js
 node_js: 
   - "stable"
 env:
-  - NODE_ENV="test" PORT=5432
+  - NODE_ENV=ci PORT=5432
 services:
   - postgresql
 install:
