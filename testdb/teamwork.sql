@@ -20,47 +20,23 @@ SET row_security = off;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
-
 --
 -- TOC entry 205 (class 1259 OID 40985)
 -- Name: articles; Type: TABLE; Schema: public; Owner: uke
 --
 
 CREATE TABLE public.articles (
-    articleid integer NOT NULL,
+    articleid SERIAL PRIMARY KEY,
     title character varying(255),
     article text,
     createdon timestamp(4) without time zone,
     userid integer
 );
 
-
-ALTER TABLE public.articles OWNER TO uke;
-
 --
 -- TOC entry 204 (class 1259 OID 40983)
 -- Name: articles_articleid_seq; Type: SEQUENCE; Schema: public; Owner: uke
 --
-
-CREATE SEQUENCE public.articles_articleid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.articles_articleid_seq OWNER TO uke;
-
---
--- TOC entry 2873 (class 0 OID 0)
--- Dependencies: 204
--- Name: articles_articleid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: uke
---
-
-ALTER SEQUENCE public.articles_articleid_seq OWNED BY public.articles.articleid;
 
 
 --
@@ -69,39 +45,17 @@ ALTER SEQUENCE public.articles_articleid_seq OWNED BY public.articles.articleid;
 --
 
 CREATE TABLE public.comments (
-    id integer NOT NULL,
+    id SERIAL PRIMARY KEY,
     articleid integer,
     comment text,
     createdon timestamp(4) without time zone,
     authorid integer
 );
 
-
-ALTER TABLE public.comments OWNER TO uke;
-
 --
 -- TOC entry 208 (class 1259 OID 41012)
 -- Name: comments_id_seq; Type: SEQUENCE; Schema: public; Owner: uke
 --
-
-CREATE SEQUENCE public.comments_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.comments_id_seq OWNER TO uke;
-
---
--- TOC entry 2874 (class 0 OID 0)
--- Dependencies: 208
--- Name: comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: uke
---
-
-ALTER SEQUENCE public.comments_id_seq OWNED BY public.comments.id;
 
 
 --
@@ -110,39 +64,17 @@ ALTER SEQUENCE public.comments_id_seq OWNED BY public.comments.id;
 --
 
 CREATE TABLE public.gifcomments (
-    id integer NOT NULL,
+    id SERIAL PRIMARY KEY,
     imageid integer,
     comment text,
     createdon timestamp(4) without time zone,
     authorid integer
 );
 
-
-ALTER TABLE public.gifcomments OWNER TO uke;
-
 --
 -- TOC entry 210 (class 1259 OID 41023)
 -- Name: gifcomments_id_seq; Type: SEQUENCE; Schema: public; Owner: uke
 --
-
-CREATE SEQUENCE public.gifcomments_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.gifcomments_id_seq OWNER TO uke;
-
---
--- TOC entry 2875 (class 0 OID 0)
--- Dependencies: 210
--- Name: gifcomments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: uke
---
-
-ALTER SEQUENCE public.gifcomments_id_seq OWNED BY public.gifcomments.id;
 
 
 --
@@ -151,40 +83,17 @@ ALTER SEQUENCE public.gifcomments_id_seq OWNED BY public.gifcomments.id;
 --
 
 CREATE TABLE public.images (
-    imageid integer NOT NULL,
+    imageid SERIAL PRIMARY KEY,
     userid integer,
     imageurl text,
     title text,
     createdon timestamp(4) without time zone
 );
 
-
-ALTER TABLE public.images OWNER TO uke;
-
 --
 -- TOC entry 206 (class 1259 OID 40996)
 -- Name: images_imageid_seq; Type: SEQUENCE; Schema: public; Owner: uke
 --
-
-CREATE SEQUENCE public.images_imageid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.images_imageid_seq OWNER TO uke;
-
---
--- TOC entry 2876 (class 0 OID 0)
--- Dependencies: 206
--- Name: images_imageid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: uke
---
-
-ALTER SEQUENCE public.images_imageid_seq OWNED BY public.images.imageid;
-
 
 --
 -- TOC entry 203 (class 1259 OID 16397)
@@ -192,7 +101,7 @@ ALTER SEQUENCE public.images_imageid_seq OWNED BY public.images.imageid;
 --
 
 CREATE TABLE public.users (
-    userid integer NOT NULL,
+    userid SERIAL PRIMARY KEY,
     firstname character varying(40),
     lastname character varying(40),
     email character varying(50),
@@ -206,72 +115,10 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO uke;
-
 --
 -- TOC entry 202 (class 1259 OID 16395)
 -- Name: users_userid_seq; Type: SEQUENCE; Schema: public; Owner: uke
 --
-
-CREATE SEQUENCE public.users_userid_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.users_userid_seq OWNER TO uke;
-
---
--- TOC entry 2877 (class 0 OID 0)
--- Dependencies: 202
--- Name: users_userid_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: uke
---
-
-ALTER SEQUENCE public.users_userid_seq OWNED BY public.users.userid;
-
-
---
--- TOC entry 2717 (class 2604 OID 40988)
--- Name: articles articleid; Type: DEFAULT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.articles ALTER COLUMN articleid SET DEFAULT nextval('public.articles_articleid_seq'::regclass);
-
-
---
--- TOC entry 2719 (class 2604 OID 41017)
--- Name: comments id; Type: DEFAULT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.comments ALTER COLUMN id SET DEFAULT nextval('public.comments_id_seq'::regclass);
-
-
---
--- TOC entry 2720 (class 2604 OID 41028)
--- Name: gifcomments id; Type: DEFAULT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.gifcomments ALTER COLUMN id SET DEFAULT nextval('public.gifcomments_id_seq'::regclass);
-
-
---
--- TOC entry 2718 (class 2604 OID 41001)
--- Name: images imageid; Type: DEFAULT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.images ALTER COLUMN imageid SET DEFAULT nextval('public.images_imageid_seq'::regclass);
-
-
---
--- TOC entry 2716 (class 2604 OID 16400)
--- Name: users userid; Type: DEFAULT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.users ALTER COLUMN userid SET DEFAULT nextval('public.users_userid_seq'::regclass);
-
 
 --
 -- TOC entry 2861 (class 0 OID 40985)
@@ -373,99 +220,6 @@ COPY public.users (userid, firstname, lastname, email, password, gender, jobrole
 -- Dependencies: 204
 -- Name: articles_articleid_seq; Type: SEQUENCE SET; Schema: public; Owner: uke
 --
-
-SELECT pg_catalog.setval('public.articles_articleid_seq', 24, true);
-
-
---
--- TOC entry 2879 (class 0 OID 0)
--- Dependencies: 208
--- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: uke
---
-
-SELECT pg_catalog.setval('public.comments_id_seq', 51, true);
-
-
---
--- TOC entry 2880 (class 0 OID 0)
--- Dependencies: 210
--- Name: gifcomments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: uke
---
-
-SELECT pg_catalog.setval('public.gifcomments_id_seq', 56, true);
-
-
---
--- TOC entry 2881 (class 0 OID 0)
--- Dependencies: 206
--- Name: images_imageid_seq; Type: SEQUENCE SET; Schema: public; Owner: uke
---
-
-SELECT pg_catalog.setval('public.images_imageid_seq', 15, true);
-
-
---
--- TOC entry 2882 (class 0 OID 0)
--- Dependencies: 202
--- Name: users_userid_seq; Type: SEQUENCE SET; Schema: public; Owner: uke
---
-
-SELECT pg_catalog.setval('public.users_userid_seq', 117, true);
-
-
---
--- TOC entry 2724 (class 2606 OID 40993)
--- Name: articles articles_pkey; Type: CONSTRAINT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.articles
-    ADD CONSTRAINT articles_pkey PRIMARY KEY (articleid);
-
-
---
--- TOC entry 2728 (class 2606 OID 41022)
--- Name: comments comments_pkey; Type: CONSTRAINT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.comments
-    ADD CONSTRAINT comments_pkey PRIMARY KEY (id);
-
-
---
--- TOC entry 2730 (class 2606 OID 41033)
--- Name: gifcomments gifcomments_pkey; Type: CONSTRAINT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.gifcomments
-    ADD CONSTRAINT gifcomments_pkey PRIMARY KEY (id);
-
-
---
--- TOC entry 2726 (class 2606 OID 41006)
--- Name: images images_pkey; Type: CONSTRAINT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.images
-    ADD CONSTRAINT images_pkey PRIMARY KEY (imageid);
-
-
---
--- TOC entry 2722 (class 2606 OID 16402)
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.users
-    ADD CONSTRAINT users_pkey PRIMARY KEY (userid);
-
-
---
--- TOC entry 2731 (class 2606 OID 41007)
--- Name: images none; Type: FK CONSTRAINT; Schema: public; Owner: uke
---
-
-ALTER TABLE ONLY public.images
-    ADD CONSTRAINT "none" FOREIGN KEY (userid) REFERENCES public.users(userid) NOT VALID;
-
 
 -- Completed on 2019-11-17 11:35:57
 
