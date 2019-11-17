@@ -3,6 +3,7 @@ node_js:
   - "stable"
 env:
   - NODE_ENV="test"
+  - DB_URL="postgres://postgres@127.0.0.1:5432/travis_ci_test"
 services:
   - postgresql
 install:
