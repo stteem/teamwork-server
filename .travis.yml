@@ -12,6 +12,7 @@ cache:
   - "$HOME/.npm"
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
-  - psql -f ./testdb/teamwork.sql -d travis_ci_test -U postgres
+  - psql -c "CREATE USER dbuser WITH PASSWORD '';" -U postgres
+  - psql -f './testdb/teamwork.sql -d travis_ci_test;' -U postgres
 script:
   - npm test
