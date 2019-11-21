@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-//const pool = new Pool();
+const pool = new Pool();
 
-const pool = new Pool({
+/*const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
-});
+});*/
 
 
 exports.getUsers = (request, response, next) => {
@@ -83,8 +83,7 @@ exports.login = (req, res) => {
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
       response.status(400).json({
-        status: 'error',
-        error,
+        error: new Error('Internal server error!'),
       });
     }
     if (!response.rows[0]) {
@@ -109,7 +108,7 @@ exports.login = (req, res) => {
       .catch(
         (err) => {
           res.status(500).send({
-            err,
+            err: 'internal server error',
           });
         },
       );
