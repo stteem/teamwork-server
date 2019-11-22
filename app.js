@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 //const path = require('path');
 const feedRoutes = require('./routes/feed');
@@ -20,6 +21,12 @@ app.use((req, res, next) => {
 
 // parse request body into a json object
 app.use(bodyParser.json());
+
+//allow access to the images folder/static resource
+//Using the built-in  path  package and Express'  static  method,
+// we can serve up static resources such as images
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 
 app.use('/api/v1/', feedRoutes);
 app.use('/api/v1/', userRoutes);

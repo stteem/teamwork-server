@@ -34,6 +34,7 @@ exports.createGif = async (req, res) => {
       imageurl = image.url;
     })
     .then(() => {
+      console.log(`request path: ${req.file.path}`)
       fs.unlink(req.file.path, () => {
         // Now Insert into database
         const datetime = new Date();
