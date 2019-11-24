@@ -3,7 +3,7 @@ const cloudinary = require('cloudinary').v2;
 const fs = require('fs');
 const getUserId = require('./getUserId');
 const dotenv = require('dotenv');
-
+const { dataUri } = require('../middleware/multer-config');
 
 dotenv.config();
 
@@ -23,20 +23,34 @@ const pool = new Pool();
   ssl: true,
 });*/
 
+const MIME_TYPES = {
+  'image/jpg': 'jpg',
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif'
+};
+
 exports.createGif = async (req, res) => {
+
+  if(!MIME_TYPES.hasOwnProperty(req.file.mimetype)) {
+    return res.status(401).send('Only gif files are supported!');
+  }
   // const { filename} = req.file;
+  //console.log('req.file', req.file)
   const userid = await getUserId.getUserId(req);
   let imageurl = '';
   const { title } = req.body;
   // const url = req.protocol + '://' + req.get('host') + '/' + req.file.originalname; Cloudinary can't upload from localhost
-  // const path = 'images/' + req.file.filename;
   // File upload (example for promise api)
-  cloudinary.uploader.upload(req.file.path, { tags: 'gifs' })
+  const file = dataUri(req).content;
+
+  cloudinary.uploader.upload(file, { tags: 'gifs' })
     .then((image) => {
       imageurl = image.url;
+      console.log('imageurl', imageurl)
     })
-    .then(() => {
-      fs.unlink(req.file.path, () => {
+    .then((req) => {
+      
         // Now Insert into database
         const datetime = new Date();
         const text = 'INSERT INTO images (userid, imageurl, title, createdon) VALUES ($1, $2, $3, $4) RETURNING *';
@@ -59,7 +73,6 @@ exports.createGif = async (req, res) => {
             },
           });
         });
-      });
     })
     .catch((err) => {
       if (err) {
