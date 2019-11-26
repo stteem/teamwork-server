@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const path = require('path');
+//const cors = require('cors');
+//const cors = require('./routes/cors');
 
 //const path = require('path');
 const feedRoutes = require('./routes/feed');
@@ -10,6 +11,7 @@ const articleRoutes = require('./routes/article');
 
 const app = express();
 
+//app.use(cors());
 
 
 app.use((req, res, next) => {
@@ -19,13 +21,14 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // parse request body into a json object
 app.use(bodyParser.json());
 
 //allow access to the images folder/static resource
 //Using the built-in  path  package and Express'  static  method,
 // we can serve up static resources such as images
-app.use('/images', express.static(path.join(__dirname, 'images')));
+//app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 app.use('/api/v1/', feedRoutes);

@@ -63,7 +63,9 @@ exports.createUser = (request, response) => {
 
       const token = jwt.sign({ userId: res.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
 
-      response.status(201).json({
+      response.statusCode = 201;
+      response.setHeader('Content-Type', 'application/json');
+      response.json({
         status: 'success',
         data: {
           message: 'User account successfully created',
@@ -79,7 +81,7 @@ exports.createUser = (request, response) => {
 exports.login = (req, res) => {
   // const { email, password } = request.body;
   const text = 'SELECT userid, email, password FROM users WHERE email = $1';
-
+  console.log('body', req.body)
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
       response.status(400).json({
@@ -98,8 +100,10 @@ exports.login = (req, res) => {
         }
 
         const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
-
-        res.status(200).json({
+        console.log('res', response.rows[0].userid)
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/json');
+        res.json({
           userId: response.rows[0].userid,
           token,
         });
