@@ -16,15 +16,14 @@ SELECT row_number() over (order by (select NULL)) as id, itemid, createdon, titl
 INTO feed FROM A`;
 
 exports.getFeed = (request, response) => {
-  console.log('response', response.body)
-  /*pool.query('DROP TABLE IF EXISTS feed', (error, res) => {
+  pool.query('DROP TABLE IF EXISTS feed', (error, res) => {
     if (error) {
       // throw error
-      response.status(400).json({
+      return response.status(400).json({
         status: 'error',
         error: error.stack,
       });
-    }*/
+    }
     pool.query(union, (erro, resp) => {
       if (erro) {
         // throw error
@@ -41,7 +40,8 @@ exports.getFeed = (request, response) => {
             error: error3.stack,
           });
         }
-        console.log('result', result.rows)
+
+        //console.log('result', result.rows)
         return response.status(200).json({
           status: 'success',
           data: result.rows,
@@ -49,5 +49,5 @@ exports.getFeed = (request, response) => {
       })
     })
     
-  //});
+  });
 };

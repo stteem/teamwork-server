@@ -78,7 +78,7 @@ exports.createUser = (request, response) => {
 
 exports.login = (req, res) => {
   // const { email, password } = request.body;
-  const text = 'SELECT userid, email, password FROM users WHERE email = $1';
+  const text = 'SELECT userid, email, password, firstname FROM users WHERE email = $1';
 
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
@@ -98,9 +98,10 @@ exports.login = (req, res) => {
         }
 
         const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
-
+        console.log('response', response.rows[0])
         res.status(200).json({
           userId: response.rows[0].userid,
+          firstname: response.rows[0].firstname,
           token,
         });
       },

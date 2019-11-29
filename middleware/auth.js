@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     }
   } catch {
     res.status(401).json({
-      error: 'Invalid request/expired token!'
+      error: 'Ouch! Sorry, but you need to login again!'
     });
   }
 };

@@ -36,14 +36,14 @@ exports.createGif = async (req, res) => {
     return res.status(401).send('Only gif files are supported!');
   }
   // const { filename} = req.file;
-  //console.log('req.file', req.file)
+  console.log('req.file', req.file)
   const userid = await getUserId.getUserId(req);
   let imageurl = '';
   const { title } = req.body;
   // const url = req.protocol + '://' + req.get('host') + '/' + req.file.originalname; Cloudinary can't upload from localhost
   // File upload (example for promise api)
   const file = dataUri(req).content;
-
+  //console.log('upload req', file)
   cloudinary.uploader.upload(file, { tags: 'gifs' })
     .then((image) => {
       imageurl = image.url;
@@ -52,7 +52,7 @@ exports.createGif = async (req, res) => {
     .then((req) => {
       
         // Now Insert into database
-        const datetime = new Date();
+        const datetime = new Date().toLocaleString();
         const text = 'INSERT INTO images (userid, imageurl, title, createdon) VALUES ($1, $2, $3, $4) RETURNING *';
         const values = [userid, imageurl, title, datetime];
 
