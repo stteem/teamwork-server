@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-const pool = new Pool();
+//const pool = new Pool();
 
-/*const pool = new Pool({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
-});*/
+});
 
 
 exports.getUsers = (request, response, next) => {
