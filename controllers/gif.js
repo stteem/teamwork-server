@@ -52,26 +52,17 @@ exports.createGif = async (req, res) => {
     .then((req) => {
       
         // Now Insert into database
-        const datetime = new Date().toLocaleString();
-        const text = 'INSERT INTO images (userid, imageurl, title, createdon) VALUES ($1, $2, $3, $4) RETURNING *';
-        const values = [userid, imageurl, title, datetime];
+        const datetime = new Date().toISOString();
+        const text = 'INSERT INTO items (imageurl, article, title, userid, createdon) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+        const values = [imageurl, null, title, userid, datetime];
 
         pool.query(text, values, (error, response) => {
           if (error) {
             res.status(500).send('server not found');
             throw error;
           }
-          res.status(201).json({
-            status: 'success',
-            data: {
-              message: 'GIF image successfully posted',
-              gifId: response.rows[0].imageid,
-              createdOn: response.rows[0].createdon,
-              title: response.rows[0].title,
-              imageUrl: response.rows[0].imageurl,
-              userId: response.rows[0].userid,
-            },
-          });
+          console.log('res', response.rows[0])
+          res.status(201).json(response.rows[0]);
         });
     })
     .catch((err) => {

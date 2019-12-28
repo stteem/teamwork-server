@@ -15,8 +15,8 @@ exports.createArticle = (request, response) => {
   // const { userid } = request.headers;
   const userid = getUserId.getUserId(request);
   const datetime = new Date();
-  const text = 'INSERT INTO articles (title, article, createdOn, userid) VALUES ($1, $2, $3, $4) RETURNING *';
-  const values = [title, body, datetime, userid];
+  const text = 'INSERT INTO items (imageurl, article, title, userid, createdOn) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+  const values = [null, body, title, userid, datetime];
 
   // Insert new article
 
@@ -29,7 +29,8 @@ exports.createArticle = (request, response) => {
       status: 'success',
       data: {
         message: 'Article successfully posted',
-    		articleId: res.rows[0].articleid,
+    		articleId: res.rows[0].itemid,
+        userId: res.rows[0].userid,
     		createdOn: res.rows[0].createdOn,
     		title: res.rows[0].title,
         article: res.rows[0].article,
@@ -40,12 +41,12 @@ exports.createArticle = (request, response) => {
 
 
 exports.updateArticle = (request, response) => {
-  const articleid = parseInt(request.params.articleId, [10]);
+  const itemid = parseInt(request.params.articleId, [10]);
   const { title, body } = request.body;
   const newdate = new Date();
-  const text = 'UPDATE articles SET title = $1, article = $2, createdOn = $3 WHERE articleid = $4 RETURNING *';
+  const text = 'UPDATE items SET title = $1, article = $2, createdOn = $3 WHERE itemid = $4 RETURNING *';
 
-  pool.query(text, [title, body, newdate, articleid],
+  pool.query(text, [title, body, newdate, itemid],
     (error, res) => {
       if (error) {
         throw error;
@@ -65,10 +66,10 @@ exports.updateArticle = (request, response) => {
 
 
 exports.deleteArticle = (request, response) => {
-  const articleid = parseInt(request.params.articleId, [10]);
+  const itemid = parseInt(request.params.articleId, [10]);
 
 
-  pool.query('DELETE FROM articles WHERE articleid = $1', [articleid],
+  pool.query('DELETE FROM items WHERE itemid = $1', [itemid],
     (error) => {
       if (error) {
         throw error;
