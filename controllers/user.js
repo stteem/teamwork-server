@@ -97,7 +97,8 @@ exports.login = (req, res) => {
           });
         }
 
-        const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
+        // expiresIn : 60, "2 days", "10h", "24h" "7d"
+        const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '7d' });
         console.log('response', response.rows[0])
         res.status(200).json({
           userId: response.rows[0].userid,

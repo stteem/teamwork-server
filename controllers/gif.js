@@ -111,7 +111,7 @@ exports.postGifComment = (request, response) => {
     const newComment = res.rows[0].comment;
 
     // console.log('res object 1', resObject)
-    const select = 'SELECT i.title FROM images i INNER JOIN gifcomments g ON i.imageid = g.imageid WHERE i.imageid = $1 AND g.id = $2';
+    const select = 'SELECT i.title FROM items i INNER JOIN gifcomments g ON i.itemid = g.imageid WHERE i.itemid = $1 AND g.id = $2';
 
     pool.query(select, [imageid, id], (err, result) => {
       if (err) {
@@ -140,8 +140,9 @@ exports.postGifComment = (request, response) => {
 
 exports.getGifAndComments = (request, response) => {
   const gifid = parseInt(request.params.gifid, [10]);
-  const text = 'SELECT imageid, createdon, title, imageurl FROM images WHERE imageid = $1';
-  const select = 'SELECT id, authorid, comment FROM gifcomments WHERE imageid = $1';
+  const text = 'SELECT itemid, createdon, title, imageurl FROM items WHERE itemid = $1';
+  const select = `SELECT g.id, g.authorid, g.comment, g.createdon, u.firstname, u.lastname FROM gifcomments g 
+                  JOIN users u ON g.authorid = u.userid WHERE imageid = $1`;
   pool.query(text, [gifid], (error, res) => {
     if (error) {
       // throw error
@@ -150,7 +151,7 @@ exports.getGifAndComments = (request, response) => {
         error: error.stack,
       });
     }
-    const { imageid } = res.rows[0];
+    const { itemid } = res.rows[0];
     const createdOn = res.rows[0].createdon;
     const { title } = res.rows[0];
     const imageUrl = res.rows[0].imageurl;
@@ -163,7 +164,7 @@ exports.getGifAndComments = (request, response) => {
       const comments = result.rows;
 
       const resObject = {
-        imageid,
+        itemid,
         createdon: createdOn,
         gifTitle: title,
         url: imageUrl,
