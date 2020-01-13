@@ -94,8 +94,9 @@ exports.postGifComment = (request, response) => {
   // let resObject = {};
   const authorid = getUserId.getUserId(request);
 
-  const imageid = parseInt(request.params.gifid, [10]);
-  const { comment } = request.body;
+  //const imageid = parseInt(request.params.gifid, [10]);
+  const { imageid, comment } = request.body;
+  //console.log('comment', request.body)
   const createdon = new Date();
   const insert = 'INSERT INTO gifcomments (imageid, comment, createdon, authorid) VALUES ($1, $2, $3, $4) RETURNING *';
   const values = [imageid, comment, createdon, authorid];
@@ -105,29 +106,28 @@ exports.postGifComment = (request, response) => {
       response.status(500).send('server not found');
       // throw error;
     }
-    const { id } = res.rows[0];
-    const imageId = res.rows[0].imageid;
-    const createdOn = res.rows[0].createdon;
-    const newComment = res.rows[0].comment;
+    const { imageid, createdon, comment, authorid } = res.rows[0];
+    
+    //const select = 'SELECT i.title FROM items i INNER JOIN gifcomments g ON i.itemid = g.imageid WHERE i.itemid = $1 AND g.id = $2';
 
-    // console.log('res object 1', resObject)
-    const select = 'SELECT i.title FROM items i INNER JOIN gifcomments g ON i.itemid = g.imageid WHERE i.itemid = $1 AND g.id = $2';
+      const select = 'SELECT firstname, lastname FROM users WHERE userid = $1';
 
-    pool.query(select, [imageid, id], (err, result) => {
+    pool.query(select, [authorid], (err, result) => {
       if (err) {
         response.status(500).send('server not found for query 2');
         // throw error;
       }
-      const newtitle = result.rows[0].title;
-      // console.log('res object 2', resObject)
+      const {firstname, lastname} = result.rows[0];
 
       const resObject = {
-        id,
-        imageid: imageId,
-        createdon: createdOn,
-        gifTitle: newtitle,
-        comment: newComment,
+        imageid: imageid,
+        firstname: firstname,
+        lastname: lastname,
+        createdon: createdon,
+        comment: comment,
       };
+
+      //console.log('res object', resObject)
 
       return response.status(201).json({
         status: 'success',
