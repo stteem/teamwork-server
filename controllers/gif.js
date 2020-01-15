@@ -91,7 +91,7 @@ exports.deleteGif = (request, response) => {
 
 
 exports.postGifComment = (request, response) => {
-  // let resObject = {};
+
   const authorid = getUserId.getUserId(request);
 
   //const imageid = parseInt(request.params.gifid, [10]);
@@ -140,7 +140,8 @@ exports.postGifComment = (request, response) => {
 
 exports.getGifAndComments = (request, response) => {
   const gifid = parseInt(request.params.gifid, [10]);
-  const text = 'SELECT itemid, createdon, title, imageurl FROM items WHERE itemid = $1';
+  const text = `SELECT i.itemid, i.createdon, i.title, i.imageurl, i.userid, u.firstname, u.lastname FROM items i
+                  JOIN users u ON i.userid = u.userid WHERE itemid = $1`;
   const select = `SELECT g.id, g.authorid, g.comment, g.createdon, u.firstname, u.lastname FROM gifcomments g 
                   JOIN users u ON g.authorid = u.userid WHERE imageid = $1`;
   pool.query(text, [gifid], (error, res) => {
@@ -151,10 +152,7 @@ exports.getGifAndComments = (request, response) => {
         error: error.stack,
       });
     }
-    const { itemid } = res.rows[0];
-    const createdOn = res.rows[0].createdon;
-    const { title } = res.rows[0];
-    const imageUrl = res.rows[0].imageurl;
+    const { itemid, createdon, title, imageurl, userid, firstname, lastname } = res.rows[0];
 
     return pool.query(select, [gifid], (err, result) => {
       if (err) {
@@ -165,9 +163,11 @@ exports.getGifAndComments = (request, response) => {
 
       const resObject = {
         itemid,
-        createdon: createdOn,
+        createdon: createdon,
+        firstname: firstname,
+        lastname: lastname,
         gifTitle: title,
-        url: imageUrl,
+        url: imageurl,
         comments,
       };
 
