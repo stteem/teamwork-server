@@ -55,14 +55,35 @@ exports.createGif = async (req, res) => {
         const datetime = new Date().toISOString();
         const text = 'INSERT INTO items (imageurl, article, title, userid, createdon) VALUES ($1, $2, $3, $4, $5) RETURNING *';
         const values = [imageurl, null, title, userid, datetime];
+        const selectNames = 'SELECT firstname, lastname FROM users WHERE userid = $1';
 
         pool.query(text, values, (error, response) => {
           if (error) {
             res.status(500).send('server not found');
             throw error;
           }
-          console.log('res', response.rows[0])
-          res.status(201).json(response.rows[0]);
+          //console.log('res', response.rows[0])
+          const { itemid, imageurl, article, title, userid, createdon } = response.rows[0];
+
+          pool.query(selectNames, [userid], (err, result) => {
+            if (error) {
+              res.status(500).send('server not found');
+              throw error;
+            }
+
+            const {firstname, lastname } = result.rows[0];
+
+            res.status(201).json({
+              itemid,
+              imageurl,
+              article,
+              title,
+              userid,
+              createdon,
+              firstname,
+              lastname
+            });
+          });
         });
     })
     .catch((err) => {
@@ -75,7 +96,7 @@ exports.createGif = async (req, res) => {
 
 exports.deleteGif = (request, response) => {
   const gifid = parseInt(request.params.gifId, [10]);
-  pool.query('DELETE FROM images WHERE imageid = $1', [gifid],
+  pool.query('DELETE FROM items WHERE itemid = $1', [gifid],
     (error) => {
       if (error) {
         throw error;

@@ -52,7 +52,7 @@ exports.getFeed = (request, response) => {
   });
 };*/
 
-exports.getFeed = (request, response) => {
+/*exports.getFeed = (request, response) => {
   pool.query('SELECT * FROM items ORDER BY createdon DESC', (error, result) => {
     if (error) {
       // throw error
@@ -68,4 +68,103 @@ exports.getFeed = (request, response) => {
       data: result.rows,
     });
   })
+}*/
+
+exports.getFeed = (request, response) => {
+
+  const select = `SELECT i.itemid, i.imageurl, i.article, i.title, i.userid, i.createdon, u.firstname,
+                 u.lastname FROM items i JOIN users u ON i.userid = u.userid ORDER BY createdon DESC`;
+
+  pool.query(select, (error, result) => {
+    if (error) {
+      // throw error
+      return response.status(400).json({
+        status: 'error',
+        error: error.stack,
+      });
+    }
+
+    //console.log('result', result.rows)
+    return response.status(200).json({
+      status: 'success',
+      data: result.rows,
+    });
+  })
 }
+
+
+/*exports.getFeed = (request, response) => {
+
+const select = `SELECT i.itemid, i.imageurl, i.article, i.title, i.userid, i.createdon, u.firstname,
+                 u.lastname FROM items i JOIN users u ON i.userid = u.userid ORDER BY createdon DESC`;
+
+const countImageComments = `SELECT COUNT(*) FROM gifcomments WHERE imageid = $1`;
+const countArticleComments = `SELECT COUNT(*) FROM comments WHERE articleid = $1`;
+
+  pool.query(select, (error, result) => {
+    if (error) {
+      // throw error
+      return response.status(400).json({
+        status: 'error',
+        error: error.stack,
+      });
+    }
+
+
+    return response.status(200).json({
+      status: "success",
+      data: result.rows.map((row) => {
+
+          const itemid = row.itemid;
+          
+
+          //const { itemid, imageurl, article, title, userid, firstname, lastname } = row;
+
+          if (row.imageurl != null) {
+            pool.query(countImageComments, [itemid], (err, res) => {
+              if (error) {
+                // throw error
+                return response.status(400).json({
+                  status: 'error',
+                  error: error.stack,
+                });
+              }
+
+              const count = res.rows;
+
+              const resObject = {
+                itemid: row.itemid,
+                imageurl: row.imageurl,
+                article: row.article,
+                title: row.title,
+                userid: row.userid,
+                count
+              }
+            });
+          }
+          else if (row.article != null) {
+            pool.query(countArticleComments, [itemid], (err, res) => {
+              if (error) {
+                // throw error
+                return response.status(400).json({
+                  status: 'error',
+                  error: error.stack,
+                });
+              }
+
+              const count = res.rows;
+
+              const resObject = {
+                itemid: row.itemid,
+                imageurl: row.imageurl,
+                article: row.article,
+                title: row.title,
+                userid: row.userid,
+                count
+              }  
+            });
+          }
+        })
+    });
+  });
+}*/

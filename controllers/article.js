@@ -61,27 +61,48 @@ exports.createArticle = (request, response) => {
 
 
 exports.updateArticle = (request, response) => {
-  const itemid = parseInt(request.params.articleId, [10]);
-  const { title, body } = request.body;
+  //const itemid = parseInt(request.params.articleId, [10]);
+  const { itemid, title, article } = request.body;
+  //console.log(request.body)
   const newdate = new Date();
   const text = 'UPDATE items SET title = $1, article = $2, createdOn = $3 WHERE itemid = $4 RETURNING *';
+  const select = 'SELECT firstname, lastname FROM users WHERE userid = $1';
 
-  pool.query(text, [title, body, newdate, itemid],
-    (error, res) => {
+  pool.query(text, [title, article, newdate, itemid], (error, res) => {
+    if (error) {
+      throw error;
+    }
+    
+    const { itemid, createdon, userid, title, article } = res.rows[0];
+
+
+    pool.query(select, [userid], (error, result) => {
       if (error) {
+        res.status(500).send('server not found');
         throw error;
       }
-      const responseObject = res.rows[0];
+
+      const {firstname, lastname} = result.rows[0];
+
+      const resObject = {
+        message: 'Article successfully posted',
+        itemid: itemid,
+        userid: userid,
+        createdon: createdon,
+        title: title,
+        article: article,
+        firstname: firstname,
+        lastname: lastname
+      };
 
       return response.status(201).json({
         status: 'success',
-        data: {
-          message: 'Article successfully updated.',
-          title: responseObject.title,
-          article: responseObject.article,
-        },
+        data: resObject
       });
+
     });
+
+  });
 };
 
 
@@ -216,13 +237,13 @@ exports.postArticleComment = (request, response) => {
 
 exports.getArticleAndComments = (request, response) => {
   const articleId = parseInt(request.params.articleId, [10]);
-  const text = `SELECT i.itemid, i.createdon, i.title, i.article, i.userid, u.firstname, u.lastname FROM items i
+  const selectArticle = `SELECT i.itemid, i.createdon, i.title, i.article, i.userid, u.firstname, u.lastname FROM items i
                 JOIN users u ON i.userid = u.userid WHERE itemid = $1`;
 
-  const select = `SELECT c.id, c.comment, c.authorid, c.articleid, c.createdon, u.firstname, u.lastname FROM comments c
+  const selectComment = `SELECT c.id, c.comment, c.authorid, c.articleid, c.createdon, u.firstname, u.lastname FROM comments c
                   JOIN users u ON c.authorid = u.userid WHERE articleid = $1`;
 
-  pool.query(text, [articleId], (error, res) => {
+  pool.query(selectArticle, [articleId], (error, res) => {
     if (error) {
       // throw error
       return response.status(400).send('Article not found!');
@@ -230,7 +251,7 @@ exports.getArticleAndComments = (request, response) => {
 
     const { itemid, createdon, title, article, userid, firstname, lastname } = res.rows[0];
 
-    return pool.query(select, [articleId], (error, result) => {
+    return pool.query(selectComment, [articleId], (error, result) => {
 
       if (error) {
         // throw error
