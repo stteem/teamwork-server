@@ -80,8 +80,9 @@ exports.createUser = (request, response) => {
 
 exports.login = (req, res) => {
   // const { email, password } = request.body;
-  const text = 'SELECT userid, email, password FROM users WHERE email = $1';
-  console.log('body', req.body)
+
+  const text = 'SELECT userid, email, password, firstname FROM users WHERE email = $1';
+
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
       response.status(400).json({
@@ -99,23 +100,24 @@ exports.login = (req, res) => {
           });
         }
 
-        const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
-        console.log('res', response.rows[0].userid)
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json({
-          userId: response.rows[0].userid,
+
+        // expiresIn : 60, "2 days", "10h", "24h" "7d"
+        const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '7d' });
+        console.log('response', response.rows[0])
+        res.status(200).json({
+          userid: response.rows[0].userid,
+          firstname: response.rows[0].firstname,
           token,
         });
       },
     )
-      .catch(
-        (err) => {
-          res.status(500).send({
-            err: 'internal server error',
-          });
-        },
-      );
+    .catch(
+      (err) => {
+        res.status(500).send({
+          err: 'internal server error',
+        });
+      },
+    );
   });
 };
 
