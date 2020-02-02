@@ -3,12 +3,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 
-const pool = new Pool();
+//const pool = new Pool();
 
-/*const pool = new Pool({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
-});*/
+});
 
 
 exports.getUsers = (request, response, next) => {
@@ -30,15 +30,12 @@ exports.getUsers = (request, response, next) => {
 
 
 exports.createUser = (request, response) => {
-  const {
-    firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus,
-  } = request.body;
+  const { firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, isadmin } = request.body;
   // const hashPassword = bcrypt.hash(password, 10);
   const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
   const time = new Date();
-  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *';
-  const values = [firstname, lastname, email, hashpw, gender,
-    jobrole, department, address, maritalstatus, time];
+  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date, isadmin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *';
+  const values = [firstname, lastname, email, hashpw, gender, jobrole, department, address, maritalstatus, time, isadmin];
     
 
   // Check if email already exists
@@ -57,13 +54,14 @@ exports.createUser = (request, response) => {
 
     return pool.query(text, values, (error, res) => {
       if (error) {
-        res.status(500).send('server not found');
-        throw error;
+        response.status(500).send('server not found');
       }
 
       const token = jwt.sign({ userId: res.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
 
-      response.status(201).json({
+      response.statusCode = 201;
+      response.setHeader('Content-Type', 'application/json');
+      response.json({
         status: 'success',
         data: {
           message: 'User account successfully created',
@@ -78,41 +76,49 @@ exports.createUser = (request, response) => {
 
 exports.login = (req, res) => {
   // const { email, password } = request.body;
+
   const text = 'SELECT userid, email, password, firstname FROM users WHERE email = $1';
 
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
-      response.status(400).json({
+      /*response.status(400).json({
         error: new Error('Internal server error!'),
-      });
+      });*/
+      throw error;
     }
     if (!response.rows[0]) {
-      return res.status(401).send('User not found!');
+      //return res.status(401).send('User not found!');
+      var error = new Error('User not found!');
+      //console.log(error)
+      throw error;
     }
     return bcrypt.compare(req.body.password, response.rows[0].password).then(
       (valid) => {
         if (!valid) {
-          res.status(401).json({
+          /*res.status(401).json({
             error: new Error('Incorrect password!'),
-          });
+          });*/
+          var error = new Error('Incorrect password!');
+          console.log(error)
+          throw error;
         }
 
-        const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
+
+        // expiresIn : 60, "2 days", "10h", "24h" "7d"
+        const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '7d' });
         console.log('response', response.rows[0])
         res.status(200).json({
-          userId: response.rows[0].userid,
+          userid: response.rows[0].userid,
           firstname: response.rows[0].firstname,
           token,
         });
       },
     )
-      .catch(
-        (err) => {
-          res.status(500).send({
-            err: 'internal server error',
-          });
-        },
-      );
+    .catch(
+      (err) => {
+        res.status(400).send( err );
+      },
+    );
   });
 };
 

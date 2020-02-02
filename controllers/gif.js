@@ -16,12 +16,12 @@ cloudinary.config({
 
 // console.log('cloud', cloudinary.config())
 
-const pool = new Pool();
+//const pool = new Pool();
 
-/*const pool = new Pool({
+const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
-});*/
+});
 
 const MIME_TYPES = {
   'image/jpg': 'jpg',
@@ -52,25 +52,37 @@ exports.createGif = async (req, res) => {
     .then((req) => {
       
         // Now Insert into database
-        const datetime = new Date().toLocaleString();
-        const text = 'INSERT INTO images (userid, imageurl, title, createdon) VALUES ($1, $2, $3, $4) RETURNING *';
-        const values = [userid, imageurl, title, datetime];
+        const datetime = new Date().toISOString();
+        const text = 'INSERT INTO items (imageurl, article, title, userid, createdon) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+        const values = [imageurl, null, title, userid, datetime];
+        const selectNames = 'SELECT firstname, lastname FROM users WHERE userid = $1';
 
         pool.query(text, values, (error, response) => {
           if (error) {
             res.status(500).send('server not found');
             throw error;
           }
-          res.status(201).json({
-            status: 'success',
-            data: {
-              message: 'GIF image successfully posted',
-              gifId: response.rows[0].imageid,
-              createdOn: response.rows[0].createdon,
-              title: response.rows[0].title,
-              imageUrl: response.rows[0].imageurl,
-              userId: response.rows[0].userid,
-            },
+          //console.log('res', response.rows[0])
+          const { itemid, imageurl, article, title, userid, createdon } = response.rows[0];
+
+          pool.query(selectNames, [userid], (err, result) => {
+            if (error) {
+              res.status(500).send('server not found');
+              throw error;
+            }
+
+            const {firstname, lastname } = result.rows[0];
+
+            res.status(201).json({
+              itemid,
+              imageurl,
+              article,
+              title,
+              userid,
+              createdon,
+              firstname,
+              lastname
+            });
           });
         });
     })
@@ -84,7 +96,7 @@ exports.createGif = async (req, res) => {
 
 exports.deleteGif = (request, response) => {
   const gifid = parseInt(request.params.gifId, [10]);
-  pool.query('DELETE FROM images WHERE imageid = $1', [gifid],
+  pool.query('DELETE FROM items WHERE itemid = $1', [gifid],
     (error) => {
       if (error) {
         throw error;
@@ -100,11 +112,12 @@ exports.deleteGif = (request, response) => {
 
 
 exports.postGifComment = (request, response) => {
-  // let resObject = {};
+
   const authorid = getUserId.getUserId(request);
 
-  const imageid = parseInt(request.params.gifid, [10]);
-  const { comment } = request.body;
+  //const imageid = parseInt(request.params.gifid, [10]);
+  const { imageid, comment } = request.body;
+  //console.log('comment', request.body)
   const createdon = new Date();
   const insert = 'INSERT INTO gifcomments (imageid, comment, createdon, authorid) VALUES ($1, $2, $3, $4) RETURNING *';
   const values = [imageid, comment, createdon, authorid];
@@ -114,29 +127,28 @@ exports.postGifComment = (request, response) => {
       response.status(500).send('server not found');
       // throw error;
     }
-    const { id } = res.rows[0];
-    const imageId = res.rows[0].imageid;
-    const createdOn = res.rows[0].createdon;
-    const newComment = res.rows[0].comment;
+    const { imageid, createdon, comment, authorid } = res.rows[0];
+    
+    //const select = 'SELECT i.title FROM items i INNER JOIN gifcomments g ON i.itemid = g.imageid WHERE i.itemid = $1 AND g.id = $2';
 
-    // console.log('res object 1', resObject)
-    const select = 'SELECT i.title FROM images i INNER JOIN gifcomments g ON i.imageid = g.imageid WHERE i.imageid = $1 AND g.id = $2';
+      const select = 'SELECT firstname, lastname FROM users WHERE userid = $1';
 
-    pool.query(select, [imageid, id], (err, result) => {
+    pool.query(select, [authorid], (err, result) => {
       if (err) {
         response.status(500).send('server not found for query 2');
         // throw error;
       }
-      const newtitle = result.rows[0].title;
-      // console.log('res object 2', resObject)
+      const {firstname, lastname} = result.rows[0];
 
       const resObject = {
-        id,
-        imageid: imageId,
-        createdon: createdOn,
-        gifTitle: newtitle,
-        comment: newComment,
+        imageid: imageid,
+        firstname: firstname,
+        lastname: lastname,
+        createdon: createdon,
+        comment: comment,
       };
+
+      //console.log('res object', resObject)
 
       return response.status(201).json({
         status: 'success',
@@ -149,8 +161,10 @@ exports.postGifComment = (request, response) => {
 
 exports.getGifAndComments = (request, response) => {
   const gifid = parseInt(request.params.gifid, [10]);
-  const text = 'SELECT imageid, createdon, title, imageurl FROM images WHERE imageid = $1';
-  const select = 'SELECT id, authorid, comment FROM gifcomments WHERE imageid = $1';
+  const text = `SELECT i.itemid, i.createdon, i.title, i.imageurl, i.userid, u.firstname, u.lastname FROM items i
+                  JOIN users u ON i.userid = u.userid WHERE itemid = $1`;
+  const select = `SELECT g.id, g.authorid, g.comment, g.createdon, u.firstname, u.lastname FROM gifcomments g 
+                  JOIN users u ON g.authorid = u.userid WHERE imageid = $1`;
   pool.query(text, [gifid], (error, res) => {
     if (error) {
       // throw error
@@ -159,10 +173,7 @@ exports.getGifAndComments = (request, response) => {
         error: error.stack,
       });
     }
-    const { imageid } = res.rows[0];
-    const createdOn = res.rows[0].createdon;
-    const { title } = res.rows[0];
-    const imageUrl = res.rows[0].imageurl;
+    const { itemid, createdon, title, imageurl, userid, firstname, lastname } = res.rows[0];
 
     return pool.query(select, [gifid], (err, result) => {
       if (err) {
@@ -172,10 +183,12 @@ exports.getGifAndComments = (request, response) => {
       const comments = result.rows;
 
       const resObject = {
-        imageid,
-        createdon: createdOn,
+        itemid,
+        createdon: createdon,
+        firstname: firstname,
+        lastname: lastname,
         gifTitle: title,
-        url: imageUrl,
+        url: imageurl,
         comments,
       };
 
