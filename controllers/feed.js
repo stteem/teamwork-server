@@ -31,7 +31,7 @@ FROM A;
 select * from feed`;
 */
 
-exports.getFeed = (request, response) => {
+/*exports.getFeed = (request, response) => {
   pool.query('DROP TABLE IF EXISTS feed', (error, res) => {
     if (error) {
       // throw error
