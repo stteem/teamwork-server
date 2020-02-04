@@ -127,15 +127,10 @@ exports.deleteArticle = (request, response) => {
 
 
 exports.postArticleComment = (request, response) => {
-<<<<<<< HEAD
   //const articleid = parseInt(request.params.articleId, [10]);
   const { newarticleid, newcomment } = request.body;
-  const authorid = getUserId.getUserId(request);
-=======
-  // const articleid = parseInt(request.params.articleId, [10]);
-  const { newarticleid, newcomment } = request.body;
   const authorId = getUserId.getUserId(request);
->>>>>>> heroku
+
 
   const datetime = new Date();
   const text = 'INSERT INTO comments (articleid, comment, createdon, authorid) VALUES ($1, $2, $3, $4) RETURNING *';
