@@ -1,12 +1,12 @@
 const { Pool } = require('pg');
 const getUserId = require('./getUserId');
 
-const pool = new Pool({
+/*const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
-});
+});*/
 
-//const pool = new Pool();
+const pool = new Pool();
 
 // console.log('userid', userid.getUserId(request));
 
@@ -164,7 +164,7 @@ exports.deleteArticle = (request, response) => {
 
 exports.postArticleComment = (request, response) => {
   //const articleid = parseInt(request.params.articleId, [10]);
-  const { articleid, comment } = request.body;
+  const { newarticleid, newcomment } = request.body;
   const authorid = getUserId.getUserId(request);
 
   const datetime = new Date();
