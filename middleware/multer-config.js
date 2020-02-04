@@ -11,5 +11,4 @@ const upload = multer({ storage: storage, limits: {fileSize: 1000000} }).single(
 const dUri = new Datauri();
 const dataUri = req => dUri.format(path.extname(req.file.originalname).toString(), req.file.buffer);
 
-
 module.exports = {upload, dataUri};
