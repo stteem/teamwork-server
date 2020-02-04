@@ -4,7 +4,6 @@ const getUserId = require('./getUserId');
 /*const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: true,
-<<<<<<< HEAD
 });*/
 
 const pool = new Pool();
