@@ -77,7 +77,7 @@ exports.createUser = (request, response) => {
 exports.login = (req, res) => {
   // const { email, password } = request.body;
 
-  const text = 'SELECT userid, email, password, firstname FROM users WHERE email = $1';
+  const text = 'SELECT userid, email, password, firstname, isadmin FROM users WHERE email = $1';
 
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
@@ -110,6 +110,7 @@ exports.login = (req, res) => {
         res.status(200).json({
           userid: response.rows[0].userid,
           firstname: response.rows[0].firstname,
+          isadmin: response.rows[0].isadmin,
           token,
         });
       },
