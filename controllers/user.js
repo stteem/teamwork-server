@@ -41,7 +41,7 @@ exports.createUser = (request, response) => {
   // Check if email already exists
   pool.query('SELECT email FROM users WHERE email = $1', [email], (err, result) => {
     if (err) {
-      response.status(400).json({
+      return response.status(400).json({
         status: 'error',
         err,
       });
@@ -52,9 +52,9 @@ exports.createUser = (request, response) => {
 
     // Create new user if email doesn't exist
 
-    return pool.query(text, values, (error, res) => {
+    pool.query(text, values, (error, res) => {
       if (error) {
-        response.status(500).send('server not found');
+       return response.status(500).send('server not found');
       }
 
       const token = jwt.sign({ userId: res.rows[0].userid }, process.env.SECRET, { expiresIn: '24h' });
@@ -81,26 +81,20 @@ exports.login = (req, res) => {
 
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
-      /*response.status(400).json({
+      return res.status(500).json({
         error: new Error('Internal server error!'),
-      });*/
-      throw error;
+      });
     }
     if (!response.rows[0]) {
-      //return res.status(401).send('User not found!');
-      var error = new Error('User not found!');
-      //console.log(error)
-      throw error;
+      console.log('user not found')
+      return res.status(400).json();
     }
-    return bcrypt.compare(req.body.password, response.rows[0].password).then(
+    bcrypt.compare(req.body.password, response.rows[0].password).then(
       (valid) => {
         if (!valid) {
-          /*res.status(401).json({
+          return res.status(401).json({
             error: new Error('Incorrect password!'),
-          });*/
-          var error = new Error('Incorrect password!');
-          console.log(error)
-          throw error;
+          });
         }
 
 

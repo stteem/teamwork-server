@@ -24,8 +24,7 @@ exports.createArticle = (request, response) => {
 
   pool.query(insert, values, (error, res) => {
     if (error) {
-      res.status(500).send('server not found');
-      throw error;
+      return res.status(500).send('server not found');
     }
 
     const {
@@ -35,8 +34,7 @@ exports.createArticle = (request, response) => {
 
     pool.query(select, [userid], (err, result) => {
       if (err) {
-        res.status(500).send('server not found');
-        throw err;
+        return res.status(500).send('server not found');
       }
 
       const { firstname, lastname } = result.rows[0];
@@ -71,7 +69,7 @@ exports.updateArticle = (request, response) => {
 
   pool.query(text, [newtitle, newarticle, newdate, newitemid], (error, res) => {
     if (error) {
-      throw error;
+      return response.status(500).send('server not found');
     }
 
     const {
@@ -81,8 +79,7 @@ exports.updateArticle = (request, response) => {
 
     pool.query(select, [userid], (err, result) => {
       if (err) {
-        res.status(500).send('server not found');
-        throw err;
+        return response.status(500).send('server not found');
       }
 
       const { firstname, lastname } = result.rows[0];
@@ -114,7 +111,7 @@ exports.deleteArticle = (request, response) => {
   pool.query('DELETE FROM items WHERE itemid = $1', [itemid],
     (error) => {
       if (error) {
-        throw error;
+        return response.status(500).send('server not found');
       }
       return response.status(200).json({
         status: 'success',
@@ -140,7 +137,7 @@ exports.postArticleComment = (request, response) => {
   // Insert comment
   pool.query(text, values, async (err, result) => {
     if (err) {
-      response.status(500).send('server not found');
+      return response.status(500).send('server not found');
       // throw err;
     }
 
@@ -149,9 +146,9 @@ exports.postArticleComment = (request, response) => {
     } = result.rows[0];
 
 
-    return pool.query(select, [authorid], (error, res) => {
+    pool.query(select, [authorid], (error, res) => {
       if (error) {
-        response.status(500).send('server not found');
+        return response.status(500).send('server not found');
         // throw error;
       }
 
@@ -185,7 +182,6 @@ exports.getArticleAndComments = (request, response) => {
 
   pool.query(selectArticle, [articleId], (error, res) => {
     if (error) {
-      // throw error
       return response.status(400).send('Article not found!');
     }
 
@@ -195,7 +191,6 @@ exports.getArticleAndComments = (request, response) => {
 
     pool.query(selectComment, [articleId], (err, result) => {
       if (err) {
-        // throw error
         return response.status(400).send('Comment not found!');
       }
 

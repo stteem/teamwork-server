@@ -45,52 +45,48 @@ exports.createGif = async (req, res) => {
   const file = dataUri(req).content;
   //console.log('upload req', file)
   cloudinary.uploader.upload(file, { tags: 'gifs' })
-    .then((image) => {
-      imageurl = image.url;
-      console.log('imageurl', imageurl)
-    })
-    .then((req) => {
-      
-        // Now Insert into database
-        const datetime = new Date().toISOString();
-        const text = 'INSERT INTO items (imageurl, article, title, userid, createdon) VALUES ($1, $2, $3, $4, $5) RETURNING *';
-        const values = [imageurl, null, title, userid, datetime];
-        const selectNames = 'SELECT firstname, lastname FROM users WHERE userid = $1';
+  .then((image) => {
+    imageurl = image.url;
+    console.log('imageurl', imageurl)
+  })
+  .then((req) => {
+    
+    // Now Insert into database
+    const datetime = new Date().toISOString();
+    const text = 'INSERT INTO items (imageurl, article, title, userid, createdon) VALUES ($1, $2, $3, $4, $5) RETURNING *';
+    const values = [imageurl, null, title, userid, datetime];
+    const selectNames = 'SELECT firstname, lastname FROM users WHERE userid = $1';
 
-        pool.query(text, values, (error, response) => {
-          if (error) {
-            res.status(500).send('server not found');
-            throw error;
-          }
-          //console.log('res', response.rows[0])
-          const { itemid, imageurl, article, title, userid, createdon } = response.rows[0];
-
-          pool.query(selectNames, [userid], (err, result) => {
-            if (error) {
-              res.status(500).send('server not found');
-              throw error;
-            }
-
-            const {firstname, lastname } = result.rows[0];
-
-            res.status(201).json({
-              itemid,
-              imageurl,
-              article,
-              title,
-              userid,
-              createdon,
-              firstname,
-              lastname
-            });
-          });
-        });
-    })
-    .catch((err) => {
-      if (err) {
-        res.status(500).json('No network, please check your internet and try again!');
+    pool.query(text, values, (error, response) => {
+      if (error) {
+        return res.status(500).send('No network, please check your internet and try again!');
       }
+      //console.log('res', response.rows[0])
+      const { itemid, imageurl, article, title, userid, createdon } = response.rows[0];
+
+      pool.query(selectNames, [userid], (err, result) => {
+        if (error) {
+          return res.status(500).send('No network, please check your internet and try again!');
+        }
+
+        const {firstname, lastname } = result.rows[0];
+
+        res.status(201).json({
+          itemid,
+          imageurl,
+          article,
+          title,
+          userid,
+          createdon,
+          firstname,
+          lastname
+        });
+      });
     });
+  })
+  .catch((err) => {
+      res.status(500).json({err: 'No network, please check your internet and try again!'});
+  });
 };
 
 
@@ -99,9 +95,9 @@ exports.deleteGif = (request, response) => {
   pool.query('DELETE FROM items WHERE itemid = $1', [gifid],
     (error) => {
       if (error) {
-        throw error;
+        return response.status(500).json();
       }
-      response.status(200).json({
+      return response.status(200).json({
         status: 'success',
         data: {
           message: 'Gif post successfully deleted.',
@@ -124,7 +120,7 @@ exports.postGifComment = (request, response) => {
   // Insert comment
   pool.query(insert, values, async (error, res) => {
     if (error) {
-      response.status(500).send('server not found');
+      return response.status(500).send('server not found');
       // throw error;
     }
     const { imageid, createdon, comment, authorid } = res.rows[0];
@@ -135,7 +131,7 @@ exports.postGifComment = (request, response) => {
 
     pool.query(select, [authorid], (err, result) => {
       if (err) {
-        response.status(500).send('server not found for query 2');
+        return response.status(500).send('server not found for query 2');
         // throw error;
       }
       const {firstname, lastname} = result.rows[0];
@@ -168,16 +164,16 @@ exports.getGifAndComments = (request, response) => {
   pool.query(text, [gifid], (error, res) => {
     if (error) {
       // throw error
-      response.status(400).json({
+      return response.status(400).json({
         status: 'error',
         error: error.stack,
       });
     }
     const { itemid, createdon, title, imageurl, userid, firstname, lastname } = res.rows[0];
 
-    return pool.query(select, [gifid], (err, result) => {
+    pool.query(select, [gifid], (err, result) => {
       if (err) {
-        response.status(500).send('server not found for query 2');
+        return response.status(500).send('server not found for query 2');
         // throw error;
       }
       const comments = result.rows;
@@ -192,7 +188,7 @@ exports.getGifAndComments = (request, response) => {
         comments,
       };
 
-      response.status(201).json({
+      return response.status(201).json({
         status: 'success',
         data: resObject,
       });
