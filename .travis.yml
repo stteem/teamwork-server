@@ -1,17 +1,23 @@
 language: node_js
 node_js: 
   - "stable"
-env:
-  - NODE_ENV="test"
 services:
   - postgresql
-install:
-  - npm ci
-cache:
-  directories:
-  - "$HOME/.npm"
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+      - postgresql-10
+      - postgresql-client-10
+env:
+  global:
+    - PGPORT=5432
+    - DB_NAME=teawork_test
+    - DB_USER=vrxlqfmbilgtpd
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
-  - psql -c "CREATE USER db_username WITH PASSWORD 'db_password';" -U postgres
+  - psql --command="CREATE USER ${DB_USER};"
+  - psql --command="CREATE DATABASE ${DB_NAME} WITH OWNER = ${DB_USER};"
+  - psql --dbname=$DB_NAME --file=testdb/schema.sql
 script:
   - npm test
+
