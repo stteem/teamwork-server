@@ -4,20 +4,26 @@ node_js:
 services:
   - postgresql
 addons:
-  postgresql: "10"
+  postgresql: "12"
   apt:
     packages:
-      - postgresql-10
-      - postgresql-client-10
+      - postgresql-12
+      - postgresql-client-12
 env:
   global:
     - PGPORT=5432
-    - DB_NAME=teawork_test
+    - DB_NAME=teamwork_test
     - DB_USER=vrxlqfmbilgtpd
+install:
+  - npm ci
+cache:
+  directories:
+  - "$HOME/.npm"
 before_script:
   - psql --command="CREATE USER ${DB_USER};"
   - psql --command="CREATE DATABASE ${DB_NAME} WITH OWNER = ${DB_USER};"
   - psql --dbname=$DB_NAME --file=testdb/schema.sql
+  - knex seed:run --env staging
 script:
   - npm test
 

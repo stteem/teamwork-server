@@ -34,7 +34,7 @@ exports.createUser = (request, response) => {
   // const hashPassword = bcrypt.hash(password, 10);
   const hashpw = bcrypt.hashSync(password, bcrypt.genSaltSync(8));
   const time = new Date();
-  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date, isadmin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *';
+  const text = 'INSERT INTO users (firstname, lastname, email, password, gender, jobrole, department, address, maritalstatus, date, isadmin) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING userid';
   const values = [firstname, lastname, email, hashpw, gender, jobrole, department, address, maritalstatus, time, isadmin];
     
 
@@ -81,26 +81,24 @@ exports.login = (req, res) => {
 
   pool.query(text, [req.body.email], (error, response) => {
     if (error) {
-      return res.status(500).json({
-        error: new Error('Internal server error!'),
-      });
+      return res.status(500).send('Internal server error!');
     }
     if (!response.rows[0]) {
-      console.log('user not found')
-      return res.status(400).json();
+      //console.log('user not found')
+      return res.status(400).json({
+        message: 'User not found'
+      });
     }
     bcrypt.compare(req.body.password, response.rows[0].password).then(
       (valid) => {
         if (!valid) {
-          return res.status(401).json({
-            error: new Error('Incorrect password!'),
-          });
+          return res.status(401).send('Incorrect password!');
         }
 
 
         // expiresIn : 60, "2 days", "10h", "24h" "7d"
         const token = jwt.sign({ userId: response.rows[0].userid }, process.env.SECRET, { expiresIn: '7d' });
-        console.log('response', response.rows[0])
+        //console.log('response', response.rows[0])
         res.status(200).json({
           userid: response.rows[0].userid,
           firstname: response.rows[0].firstname,
