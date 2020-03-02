@@ -12,9 +12,10 @@ module.exports = {
   staging: {
     client: 'postgresql',
     connection: {
+      host: '127.0.0.1',
       database: 'teamwork_test',
       user:     'vrxlqfmbilgtpd',
-      password: ''
+      password: null
     },
     pool: {
       min: 0,
