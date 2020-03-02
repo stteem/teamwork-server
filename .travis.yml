@@ -20,7 +20,6 @@ cache:
   directories:
   - "$HOME/.npm"
 before_script:
-  - psql --command="CREATE USER ${DB_USER};"
   - psql --command="CREATE DATABASE ${DB_NAME} WITH OWNER = ${DB_USER};"
   - psql --dbname=$DB_NAME --file=testdb/schema.sql
   - knex seed:run --env staging
