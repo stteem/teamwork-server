@@ -11,7 +11,7 @@ module.exports = {
 
   staging: {
     client: 'postgresql',
-    connection: `postgres://postgres@127.0.0.1:5433/teamwork_test`,
+    connection: `postgres://vrxlqfmbilgtpd@127.0.0.1:5433/teamwork_test`,
     pool: {
       min: 0,
       max: 10
