@@ -15,7 +15,7 @@ module.exports = {
       host: '127.0.0.1',
       database: 'teamwork_test',
       user:     'vrxlqfmbilgtpd',
-      password: null
+      password: ''
     },
     pool: {
       min: 0,
