@@ -1,6 +1,10 @@
 language: node_js
 node_js: 
   - "stable"
+branches:
+  only:
+    - develop
+    - dev3
 services:
   - postgresql
 addons:
@@ -11,7 +15,7 @@ addons:
       - postgresql-client-12
 env:
   global:
-    - PGPORT=5432
+    - PGPORT=5433
     - DB_NAME=teamwork_test
     - DB_USER=vrxlqfmbilgtpd
 install:
